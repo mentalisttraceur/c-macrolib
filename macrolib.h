@@ -9,15 +9,15 @@
 #define MACROLIB_CATENATE(left, right) left##right
 #define MACROLIB_SCAN_CATENATE(left, right) \
     MACROLIB_CATENATE(left, right)
-#define MACROLIB_FIRST(sequence) MACROLIB_FIRST_ sequence)
-#define MACROLIB_FIRST_(x) x MACROLIB_DELETE(
+#define MACROLIB_HEAD(sequence) MACROLIB_HEAD_ sequence)
+#define MACROLIB_HEAD_(x) x MACROLIB_DELETE(
+#define MACROLIB_TAIL(sequence) MACROLIB_DELETE sequence
 
 #define MACROLIB_REDUCE(macro_state_result, sequence) \
-    MACROLIB_SCAN(MACROLIB_SCAN(MACROLIB_SCAN( \
-        MACROLIB_DELETE MACROLIB_DELETE \
-            MACROLIB_WALK(MACROLIB_OPEN_1 sequence) \
-            macro_state_result \
-            MACROLIB_WALK(MACROLIB_CLOSE_1 sequence) \
+    MACROLIB_TAIL(MACROLIB_TAIL(MACROLIB_SCAN( \
+        MACROLIB_WALK(MACROLIB_OPEN_1 sequence) \
+        macro_state_result \
+        MACROLIB_WALK(MACROLIB_CLOSE_1 sequence) \
     )))
 #define MACROLIB_SCAN(x) x
 
@@ -25,11 +25,9 @@
     MACROLIB_CATENATE(macro_sequence, _END)
 
 #define MACROLIB_OPEN_1(x) \
-    MACROLIB_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) \
-    MACROLIB_OPEN_2
+    MACROLIB_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) MACROLIB_OPEN_2
 #define MACROLIB_OPEN_2(x) \
-    MACROLIB_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) \
-    MACROLIB_OPEN_1
+    MACROLIB_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) MACROLIB_OPEN_1
 #define MACROLIB_OPEN_1_END
 #define MACROLIB_OPEN_2_END
 #define MACROLIB_OPEN() (
@@ -43,10 +41,10 @@
 #define MACROLIB_CLOSE(x) , x)
 
 #define MACROLIB_STEP(macro_state_result, x) \
-    (MACROLIB_FIRST(macro_state_result)) \
-    MACROLIB_FIRST(macro_state_result)( \
-        MACROLIB_FIRST(MACROLIB_DELETE macro_state_result), \
-        MACROLIB_DELETE MACROLIB_DELETE macro_state_result, \
+    (MACROLIB_HEAD(macro_state_result)) \
+    MACROLIB_HEAD(macro_state_result)( \
+        MACROLIB_HEAD(MACROLIB_TAIL(macro_state_result)), \
+        MACROLIB_TAIL(MACROLIB_TAIL(macro_state_result)), \
         x \
     )
 
