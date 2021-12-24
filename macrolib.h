@@ -58,4 +58,30 @@
 #define MACROLIB_COMMA_2_END
 #define MACROLIB_COMMA(x) , x
 
+#define MACROLIB_NESTED_TAIL(sequence) MACROLIB_DELETE sequence
+
+#define MACROLIB_NESTED_REDUCE(macro_state_result, sequence) \
+    MACROLIB_NESTED_TAIL(MACROLIB_NESTED_TAIL(MACROLIB_NESTED_SCAN( \
+        MACROLIB_WALK(MACROLIB_NESTED_OPEN_1 sequence) \
+        macro_state_result \
+        MACROLIB_WALK(MACROLIB_CLOSE_1 sequence) \
+    )))
+#define MACROLIB_NESTED_SCAN(x) x
+
+#define MACROLIB_NESTED_OPEN_1(x) \
+    MACROLIB_NESTED_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) \
+    MACROLIB_NESTED_OPEN_2
+#define MACROLIB_NESTED_OPEN_2(x) \
+    MACROLIB_NESTED_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) \
+    MACROLIB_NESTED_OPEN_1
+#define MACROLIB_NESTED_OPEN_1_END
+#define MACROLIB_NESTED_OPEN_2_END
+
+#define MACROLIB_NESTED_STEP(macro_state_result, x) \
+    (MACROLIB_HEAD(macro_state_result)) \
+    MACROLIB_HEAD(macro_state_result)( \
+        MACROLIB_HEAD(MACROLIB_NESTED_TAIL(macro_state_result)), \
+        MACROLIB_NESTED_TAIL(MACROLIB_NESTED_TAIL(macro_state_result)), \
+        x \
+    )
 #endif /* MACROLIB_H */
