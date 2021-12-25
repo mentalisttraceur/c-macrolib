@@ -13,23 +13,26 @@
 #define MACROLIB_HEAD_(x) x MACROLIB_DELETE(
 #define MACROLIB_TAIL(sequence) MACROLIB_DELETE sequence
 
-#define MACROLIB_REDUCE(macro_state_result, sequence) \
-    MACROLIB_TAIL(MACROLIB_TAIL(MACROLIB_SCAN( \
-        MACROLIB_WALK(MACROLIB_OPEN_1 sequence) \
-        macro_state_result \
+#define MACROLIB_REDUCE(macro, state_initial, sequence) \
+    MACROLIB_REDUCE_SCAN(MACROLIB_REDUCE_SCAN(MACROLIB_REDUCE_SCAN( \
+    MACROLIB_DELETE MACROLIB_DELETE \
+        MACROLIB_WALK(MACROLIB_REDUCE_OPEN_1 sequence) \
+        (macro)state_initial \
         MACROLIB_WALK(MACROLIB_CLOSE_1 sequence) \
     )))
-#define MACROLIB_SCAN(x) x
+#define MACROLIB_REDUCE_SCAN(x) x
 
 #define MACROLIB_WALK(macro_sequence) \
     MACROLIB_CATENATE(macro_sequence, _END)
 
-#define MACROLIB_OPEN_1(x) \
-    MACROLIB_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) MACROLIB_OPEN_2
-#define MACROLIB_OPEN_2(x) \
-    MACROLIB_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) MACROLIB_OPEN_1
-#define MACROLIB_OPEN_1_END
-#define MACROLIB_OPEN_2_END
+#define MACROLIB_REDUCE_OPEN_1(x) \
+    MACROLIB_REDUCE_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) \
+    MACROLIB_REDUCE_OPEN_2
+#define MACROLIB_REDUCE_OPEN_2(x) \
+    MACROLIB_REDUCE_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) \
+    MACROLIB_REDUCE_OPEN_1
+#define MACROLIB_REDUCE_OPEN_1_END
+#define MACROLIB_REDUCE_OPEN_2_END
 #define MACROLIB_OPEN() (
 
 #define MACROLIB_CLOSE_1(x) \
@@ -40,11 +43,11 @@
 #define MACROLIB_CLOSE_2_END
 #define MACROLIB_CLOSE(x) , x)
 
-#define MACROLIB_STEP(macro_state_result, x) \
+#define MACROLIB_REDUCE_STEP(macro_state_result, x) \
     (MACROLIB_HEAD(macro_state_result)) \
     MACROLIB_HEAD(macro_state_result)( \
-        MACROLIB_HEAD(MACROLIB_TAIL(macro_state_result)), \
-        MACROLIB_TAIL(MACROLIB_TAIL(macro_state_result)), \
+        MACROLIB_HEAD(MACROLIB_DELETE macro_state_result), \
+        MACROLIB_DELETE MACROLIB_DELETE macro_state_result, \
         x \
     )
 
@@ -58,30 +61,24 @@
 #define MACROLIB_COMMA_2_END
 #define MACROLIB_COMMA(x) , x
 
-#define MACROLIB_NESTED_TAIL(sequence) MACROLIB_DELETE sequence
-
-#define MACROLIB_NESTED_REDUCE(macro_state_result, sequence) \
-    MACROLIB_NESTED_TAIL(MACROLIB_NESTED_TAIL(MACROLIB_NESTED_SCAN( \
-        MACROLIB_WALK(MACROLIB_NESTED_OPEN_1 sequence) \
-        macro_state_result \
+#define MACROLIB_MAP(macro, parameter, sequence) \
+    MACROLIB_MAP_SCAN(MACROLIB_MAP_SCAN(MACROLIB_MAP_SCAN( \
+    MACROLIB_DELETE MACROLIB_DELETE \
+        MACROLIB_WALK(MACROLIB_MAP_OPEN_1 sequence) \
+        (macro)(parameter) \
         MACROLIB_WALK(MACROLIB_CLOSE_1 sequence) \
     )))
-#define MACROLIB_NESTED_SCAN(x) x
+#define MACROLIB_MAP_SCAN(x) x
 
-#define MACROLIB_NESTED_OPEN_1(x) \
-    MACROLIB_NESTED_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) \
-    MACROLIB_NESTED_OPEN_2
-#define MACROLIB_NESTED_OPEN_2(x) \
-    MACROLIB_NESTED_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) \
-    MACROLIB_NESTED_OPEN_1
-#define MACROLIB_NESTED_OPEN_1_END
-#define MACROLIB_NESTED_OPEN_2_END
+#define MACROLIB_MAP_OPEN_1(x) \
+    MACROLIB_MAP_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) MACROLIB_MAP_OPEN_2
+#define MACROLIB_MAP_OPEN_2(x) \
+    MACROLIB_MAP_STEP MACROLIB_OPEN MACROLIB_UNWRAP(()) MACROLIB_MAP_OPEN_1
+#define MACROLIB_MAP_OPEN_1_END
+#define MACROLIB_MAP_OPEN_2_END
 
-#define MACROLIB_NESTED_STEP(macro_state_result, x) \
-    (MACROLIB_HEAD(macro_state_result)) \
-    MACROLIB_HEAD(macro_state_result)( \
-        MACROLIB_HEAD(MACROLIB_NESTED_TAIL(macro_state_result)), \
-        MACROLIB_NESTED_TAIL(MACROLIB_NESTED_TAIL(macro_state_result)), \
-        x \
-    )
+#define MACROLIB_MAP_STEP(macro_parameter_result, x) \
+    macro_parameter_result \
+    MACROLIB_HEAD(macro_parameter_result) \
+        (MACROLIB_HEAD(MACROLIB_DELETE macro_parameter_result), x)
 #endif /* MACROLIB_H */
