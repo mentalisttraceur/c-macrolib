@@ -82,4 +82,7 @@
     macro_parameter_result \
     MACROLIB_HEAD(macro_parameter_result) \
         (MACROLIB_HEAD(MACROLIB_DELETE macro_parameter_result), x)
+
+#define MACROLIB_STRINGIFY(x) #x
+#define MACROLIB_EXPAND_STRINGIFY(x) MACROLIB_STRINGIFY(x)
 #endif /* MACROLIB_H */
